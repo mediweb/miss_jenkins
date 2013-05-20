@@ -3,8 +3,6 @@ $:.unshift("/Library/RubyMotion/lib")
 require 'motion/project/template/osx'
 require 'bundler/setup'
 Bundler.require
-require 'bubble-wrap'
-require 'bubble-wrap/all'
 
 Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings.
