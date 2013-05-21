@@ -11,14 +11,14 @@ class JenkinsController < NSWindowController
 
   def buildWindow
     scroll_view_height = 320
-    @window = NSWindow.alloc.initWithContentRect([[240, 180], [432, scroll_view_height + 40]],
+    @window = NSWindow.alloc.initWithContentRect([[240, 180], [432, scroll_view_height + 70]],
       styleMask: NSTitledWindowMask|NSClosableWindowMask|NSMiniaturizableWindowMask|NSResizableWindowMask,
       backing: NSBackingStoreBuffered,
       defer: false)
     @window.title = NSBundle.mainBundle.infoDictionary['CFBundleName']
     @window.orderFrontRegardless
 
-    scroll_view = NSScrollView.alloc.initWithFrame(NSMakeRect(20, 20, 392, scroll_view_height))
+    scroll_view = NSScrollView.alloc.initWithFrame(NSMakeRect(20, 50, 392, scroll_view_height))
     scroll_view.setAutoresizingMask(NSViewWidthSizable|NSViewHeightSizable)
     scroll_view.setHasVerticalScroller(true)
     scroll_view.setHasHorizontalScroller(true)
@@ -43,6 +43,14 @@ class JenkinsController < NSWindowController
 
     @myTableView.delegate = self
     @myTableView.dataSource = self
+
+    @addButton = NSButton.alloc.initWithFrame(NSMakeRect(337, 13, 80, 28))
+    @addButton.setTitle("Settings")
+    @addButton.setAction("settings:")
+    @addButton.setTarget(self)
+    @addButton.setBezelStyle(NSRoundedBezelStyle)
+    @addButton.setAutoresizingMask(NSViewMinXMargin)
+    @window.contentView.addSubview(@addButton)
   end
 
   def fetchStatus
@@ -82,6 +90,17 @@ class JenkinsController < NSWindowController
           NSColor.grayColor
       end
       cell.setTextColor(color)
+    end
+  end
+
+  def settings(sender)
+    @mySettingsController ||= SettingsController.alloc.init
+
+    # ask our edit sheet for information on the record we want to add
+    newValues = @mySettingsController.edit(nil, from:self)
+    if !@mySettingsController.wasCancelled
+      # TODO save settings
+      puts "Saving settings #{newValues}"
     end
   end
 end
