@@ -1,5 +1,9 @@
-class JenkinsController
-  def initialize(window)
+class JenkinsController < NSWindowController
+  attr_reader :window
+
+  def init
+    super
+    buildWindow
     @feed = []
 
     @table_view = NSTableView.alloc.init
@@ -17,9 +21,19 @@ class JenkinsController
 
     @table_view.delegate = self
     @table_view.dataSource = self
-    window.contentView.addSubview(@table_view)
+    @window.contentView.addSubview(@table_view)
 
     fetchStatus
+    self
+  end
+
+  def buildWindow
+    @window = NSWindow.alloc.initWithContentRect([[240, 180], [480, 360]],
+      styleMask: NSTitledWindowMask|NSClosableWindowMask|NSMiniaturizableWindowMask|NSResizableWindowMask,
+      backing: NSBackingStoreBuffered,
+      defer: false)
+    @window.title = NSBundle.mainBundle.infoDictionary['CFBundleName']
+    @window.orderFrontRegardless
   end
 
   def fetchStatus
