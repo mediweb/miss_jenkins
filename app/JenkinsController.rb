@@ -51,6 +51,14 @@ class JenkinsController < NSWindowController
     @addButton.setBezelStyle(NSRoundedBezelStyle)
     @addButton.setAutoresizingMask(NSViewMinXMargin)
     @window.contentView.addSubview(@addButton)
+
+    @addButton = NSButton.alloc.initWithFrame(NSMakeRect(247, 13, 80, 28))
+    @addButton.setTitle("Refresh")
+    @addButton.setAction("refresh:")
+    @addButton.setTarget(self)
+    @addButton.setBezelStyle(NSRoundedBezelStyle)
+    @addButton.setAutoresizingMask(NSViewMinXMargin)
+    @window.contentView.addSubview(@addButton)
   end
 
   def fetchStatus
@@ -102,5 +110,9 @@ class JenkinsController < NSWindowController
       # TODO save settings
       puts "Saving settings #{newValues}"
     end
+  end
+
+  def refresh(sender)
+    fetchStatus
   end
 end
