@@ -1,12 +1,29 @@
 class JenkinsController < NSWindowController
   attr_reader :window
+  attr_reader :menu
 
   def init
     @feed = []
     super
+    buildMenu
     buildWindow
     fetchStatus
     self
+  end
+
+  def buildMenu
+    width = 30.0
+    height = NSStatusBar.systemStatusBar.thickness
+
+    statusItem = NSStatusBar.systemStatusBar.statusItemWithLength(NSSquareStatusItemLength).retain
+    statusItem.setHighlightMode true
+
+    menu_image = NSImage.imageNamed("MissJenkins.icns")
+    menu_image.setSize(NSMakeSize(width, height))
+    statusItem.setImage(menu_image)
+
+    @menu = NSMenu.alloc.initWithTitle("MissJenkins")
+    statusItem.setMenu(@menu)
   end
 
   def buildWindow
@@ -64,10 +81,21 @@ class JenkinsController < NSWindowController
   def fetchStatus
     BW::HTTP.get('http://jenkins.local:8088/api/json') do |r|
       @feed = BW::JSON.parse(r.body)['jobs']
-      @myTableView.reloadData
+      reload_data
     end
   end
 
+  def reload_data
+    @myTableView.reloadData
+    refresh_menu_items
+  end
+
+  def refresh_menu_items
+    @menu.removeAllItems
+    @feed.each do |job|
+      @menu.addItemWithTitle("#{job['name']} - #{job['color']}", action: nil, keyEquivalent:'')
+    end
+  end
 
   # table delegate
 
