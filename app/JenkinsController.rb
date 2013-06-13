@@ -1,4 +1,6 @@
 class JenkinsController < NSWindowController
+  JENKINS_BASE_URL = 'http://jenkins.local:8088/'
+
   attr_reader :window
   attr_reader :menu
 
@@ -79,7 +81,7 @@ class JenkinsController < NSWindowController
   end
 
   def fetchStatus
-    BW::HTTP.get('http://jenkins.local:8088/api/json') do |r|
+    BW::HTTP.get(JENKINS_BASE_URL + 'api/json') do |r|
       @feed = BW::JSON.parse(r.body)['jobs']
       reload_data
     end
