@@ -102,7 +102,7 @@ class JenkinsController < NSWindowController
 
   def menu_item_clicked(sender)
     item = @feed[@menu.indexOfItem(sender)]
-    NSWorkspace.sharedWorkspace.openURL(NSURL.URLWithString(item['url']))
+    NSWorkspace.sharedWorkspace.openURL(target_url(item))
   end
 
   # table delegate
@@ -151,4 +151,11 @@ class JenkinsController < NSWindowController
   def refresh(sender)
     fetchStatus
   end
+
+  private
+
+    def target_url(item)
+      # Replace base url
+      NSURL.URLWithString(item['url'].gsub(%r{^https?://[^/]+/}, JENKINS_BASE_URL))
+    end
 end
