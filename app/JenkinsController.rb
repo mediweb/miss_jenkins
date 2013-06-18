@@ -81,8 +81,14 @@ class JenkinsController < NSWindowController
 
   def fetchStatus
     BW::HTTP.get(jenkins_base_url + 'api/json') do |r|
-      @feed = BW::JSON.parse(r.body)['jobs']
-      reload_data
+      if r.ok?
+        @feed = BW::JSON.parse(r.body)['jobs']
+        reload_data
+      elsif r.status_code.to_s =~ /40\d/
+        show_alert("Failed to fetch data", "Jenkins is down or your settings are wrong. Please check.")
+      else
+        show_alert("Error", r.error_message)
+      end
     end
   end
 
@@ -163,5 +169,14 @@ class JenkinsController < NSWindowController
 
     def currentValues
       {"jenkins_url" => jenkins_base_url}
+    end
+
+    def show_alert(title, message)
+      alert = NSAlert.alloc.init
+      alert.addButtonWithTitle("OK")
+      alert.setMessageText(title)
+      alert.setInformativeText(message)
+      alert.setAlertStyle(NSCriticalAlertStyle)
+      alert.beginSheetModalForWindow(@window, modalDelegate:self, didEndSelector:nil, contextInfo:nil)
     end
 end
