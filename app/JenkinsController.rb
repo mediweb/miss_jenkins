@@ -1,5 +1,4 @@
 class JenkinsController < NSWindowController
-  JENKINS_BASE_URL = 'http://jenkins.local:8088/'
 
   attr_reader :window
   attr_reader :menu
@@ -81,7 +80,7 @@ class JenkinsController < NSWindowController
   end
 
   def fetchStatus
-    BW::HTTP.get(JENKINS_BASE_URL + 'api/json') do |r|
+    BW::HTTP.get(jenkins_base_url + 'api/json') do |r|
       @feed = BW::JSON.parse(r.body)['jobs']
       reload_data
     end
@@ -141,10 +140,9 @@ class JenkinsController < NSWindowController
     @mySettingsController ||= SettingsController.alloc.init
 
     # ask our edit sheet for information on the record we want to add
-    newValues = @mySettingsController.edit(nil, from:self)
+    newValues = @mySettingsController.edit(currentValues, from:self)
     if !@mySettingsController.wasCancelled
-      # TODO save settings
-      puts "Saving settings #{newValues}"
+      NSUserDefaults.standardUserDefaults.setObject(newValues["jenkins_url"], forKey:"jenkins_url") if newValues["jenkins_url"]
     end
   end
 
@@ -156,6 +154,14 @@ class JenkinsController < NSWindowController
 
     def target_url(item)
       # Replace base url
-      NSURL.URLWithString(item['url'].gsub(%r{^https?://[^/]+/}, JENKINS_BASE_URL))
+      NSURL.URLWithString(item['url'].gsub(%r{^https?://[^/]+/}, jenkins_base_url))
+    end
+
+    def jenkins_base_url
+      NSUserDefaults.standardUserDefaults.stringForKey("jenkins_url") || 'http://127.0.0.1:8080/'
+    end
+
+    def currentValues
+      {"jenkins_url" => jenkins_base_url}
     end
 end

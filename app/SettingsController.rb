@@ -46,11 +46,10 @@ class SettingsController < NSWindowController
     @cancelled = false
 
     editFields = @editForm.cells
-    if startingValues != nil
+    if startingValues
       # we are editing current entry, use its values as the default
       @savedFields = startingValues
-
-      editFields.objectAtIndex(0).setStringValue(startingValues.objectForKey("jenkins_url"))
+      editFields.objectAtIndex(0).setStringValue(startingValues["jenkins_url"])
     else
       # we are adding a new entry,
       # make sure the form fields are empty due to the fact that this controller is recycled
