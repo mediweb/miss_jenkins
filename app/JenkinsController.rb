@@ -13,17 +13,13 @@ class JenkinsController < NSWindowController
   end
 
   def buildMenu
-    width = height = [NSStatusBar.systemStatusBar.thickness, 30.0].min
+    @statusItem = NSStatusBar.systemStatusBar.statusItemWithLength(NSSquareStatusItemLength).retain
+    @statusItem.setHighlightMode true
 
-    statusItem = NSStatusBar.systemStatusBar.statusItemWithLength(NSSquareStatusItemLength).retain
-    statusItem.setHighlightMode true
-
-    menu_image = NSImage.imageNamed("MissJenkins.icns")
-    menu_image.setSize(NSMakeSize(width, height))
-    statusItem.setImage(menu_image)
+    @statusItem.setImage(default_image)
 
     @menu = NSMenu.alloc.initWithTitle("MissJenkins")
-    statusItem.setMenu(@menu)
+    @statusItem.setMenu(@menu)
   end
 
   def buildWindow
@@ -105,6 +101,7 @@ class JenkinsController < NSWindowController
     @menu.addItem NSMenuItem.separatorItem
     refresh_item = @menu.addItemWithTitle("Refresh", action: "refresh_status:", keyEquivalent:'')
     refresh_item.setTarget(self)
+    @statusItem.setImage(failure_jobs_exist? ? failure_image : success_image)
   end
 
   def link_item_url(sender)
@@ -184,5 +181,35 @@ class JenkinsController < NSWindowController
       alert.setInformativeText(message)
       alert.setAlertStyle(NSCriticalAlertStyle)
       alert.beginSheetModalForWindow(@window, modalDelegate:self, didEndSelector:nil, contextInfo:nil)
+    end
+
+    def failure_jobs_exist?
+      @feed.any?{|job| job['color'] == 'red' }
+    end
+
+    # Images
+    def default_image
+      success_image
+    end
+
+    def success_image
+      @success_image ||= NSImage.imageNamed("MissJenkins.icns")
+      @success_image.setSize(NSMakeSize(image_width, image_height))
+      @success_image
+    end
+
+    def failure_image
+      # TODO replace image with MissJenkins_failure.icns
+      @failure_image ||= NSImage.imageNamed("MissJenkins.icns")
+      @failure_image.setSize(NSMakeSize(image_width, image_height))
+      @failure_image
+    end
+
+    def image_width
+      [NSStatusBar.systemStatusBar.thickness, 30.0].min
+    end
+
+    def image_height
+      image_width
     end
 end
