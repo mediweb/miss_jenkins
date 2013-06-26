@@ -99,12 +99,12 @@ class JenkinsController < NSWindowController
   def refresh_menu_items
     @menu.removeAllItems
     @feed.each do |job|
-      menu_item = @menu.addItemWithTitle("#{job['name']} - #{job['color']}", action: "menu_item_clicked:", keyEquivalent:'')
+      menu_item = @menu.addItemWithTitle("#{job['name']} - #{job['color']}", action: "link_item_url:", keyEquivalent:'')
       menu_item.setTarget(self)
     end
   end
 
-  def menu_item_clicked(sender)
+  def link_item_url(sender)
     item = @feed[@menu.indexOfItem(sender)]
     NSWorkspace.sharedWorkspace.openURL(target_url(item))
   end
