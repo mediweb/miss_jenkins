@@ -102,11 +102,18 @@ class JenkinsController < NSWindowController
       menu_item = @menu.addItemWithTitle("#{job['name']} - #{job['color']}", action: "link_item_url:", keyEquivalent:'')
       menu_item.setTarget(self)
     end
+    @menu.addItem NSMenuItem.separatorItem
+    refresh_item = @menu.addItemWithTitle("Refresh", action: "refresh_status:", keyEquivalent:'')
+    refresh_item.setTarget(self)
   end
 
   def link_item_url(sender)
     item = @feed[@menu.indexOfItem(sender)]
     NSWorkspace.sharedWorkspace.openURL(target_url(item))
+  end
+
+  def refresh_status(sender)
+    fetchStatus
   end
 
   # table delegate
