@@ -13,8 +13,7 @@ class JenkinsController < NSWindowController
   end
 
   def buildMenu
-    width = 30.0
-    height = NSStatusBar.systemStatusBar.thickness
+    width = height = [NSStatusBar.systemStatusBar.thickness, 30.0].min
 
     statusItem = NSStatusBar.systemStatusBar.statusItemWithLength(NSSquareStatusItemLength).retain
     statusItem.setHighlightMode true
