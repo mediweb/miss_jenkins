@@ -94,14 +94,16 @@ class JenkinsController < NSWindowController
 
   def refresh_menu_items
     @menu.removeAllItems
-    @feed.each do |job|
-      menu_item = @menu.addItemWithTitle("#{job['name']} - #{job['color']}", action: "link_item_url:", keyEquivalent:'')
-      menu_item.setTarget(self)
-    end
-    @menu.addItem NSMenuItem.separatorItem
     refresh_item = @menu.addItemWithTitle("Refresh", action: "refresh_status:", keyEquivalent:'')
     refresh_item.setTarget(self)
     @statusItem.setImage(failure_jobs_exist? ? failure_image : success_image)
+    unless @feed.empty?
+      @menu.addItem NSMenuItem.separatorItem
+      @feed.each do |job|
+        menu_item = @menu.addItemWithTitle("#{job['name']} - #{job['color']}", action: "link_item_url:", keyEquivalent:'')
+        menu_item.setTarget(self)
+      end
+    end
   end
 
   def link_item_url(sender)
