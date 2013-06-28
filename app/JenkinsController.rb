@@ -104,6 +104,9 @@ class JenkinsController < NSWindowController
         menu_item.setTarget(self)
       end
     end
+
+    @menu.addItem NSMenuItem.separatorItem
+    @menu.addItemWithTitle("Quit #{App.name}", action: 'terminate:', keyEquivalent: 'q')
   end
 
   def link_item_url(sender)
