@@ -24,7 +24,7 @@ class JenkinsController < NSWindowController
   def fetchStatus
     BW::HTTP.get(jenkins_base_url + 'api/json') do |r|
       if r.ok?
-        @feed = BW::JSON.parse(r.body)['jobs']
+        @feed = BW::JSON.parse(r.body)['jobs'].group_by{|job| job['color']}
         reload_data
       elsif r.status_code.to_s =~ /40\d/
         show_alert("Failed to fetch data", "Jenkins is down or your settings are wrong. Please check.")
@@ -44,9 +44,12 @@ class JenkinsController < NSWindowController
     refresh_item = @menu.addItemWithTitle("Refresh", action: "refresh_status:", keyEquivalent:'')
     refresh_item.setTarget(self)
     @statusItem.setImage(failure_jobs_exist? ? failure_image : success_image)
-    unless @feed.empty?
+
+    status = ["red_anime", "blue_anime", "grey_anime", "disabled_anime", "red", "blue", "grey", "disabled"] # Sorting
+    (status & @feed.keys).each do |color|
+      jobs = @feed[color]
       @menu.addItem NSMenuItem.separatorItem
-      @feed.each do |job|
+      jobs.each do |job|
         menu_item = @menu.addItemWithTitle("#{job['name']} - #{job['color']}", action: "link_item_url:", keyEquivalent:'')
         menu_item.setTarget(self)
       end
@@ -102,7 +105,7 @@ class JenkinsController < NSWindowController
     end
 
     def failure_jobs_exist?
-      @feed.any?{|job| job['color'] == 'red' }
+      @feed.map{|status, jobs| jobs }.flatten.any?{|job| job['color'] == 'red' }
     end
 
     # Images
