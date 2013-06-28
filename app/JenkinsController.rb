@@ -81,7 +81,7 @@ class JenkinsController < NSWindowController
 
     def target_url(item)
       # Replace base url
-      NSURL.URLWithString(item['url'].gsub(%r{^https?://[^/]+/}, jenkins_base_url))
+      NSURL.URLWithString(item['url'])
     end
 
     def jenkins_base_url
