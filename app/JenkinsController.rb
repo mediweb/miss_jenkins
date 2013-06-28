@@ -7,7 +7,6 @@ class JenkinsController < NSWindowController
     @feed = []
     super
     buildMenu
-    buildWindow
     fetchStatus
     self
   end
@@ -20,58 +19,6 @@ class JenkinsController < NSWindowController
 
     @menu = NSMenu.alloc.initWithTitle("MissJenkins")
     @statusItem.setMenu(@menu)
-  end
-
-  def buildWindow
-    scroll_view_height = 320
-    @window = NSWindow.alloc.initWithContentRect([[240, 180], [432, scroll_view_height + 70]],
-      styleMask: NSTitledWindowMask|NSClosableWindowMask|NSMiniaturizableWindowMask|NSResizableWindowMask,
-      backing: NSBackingStoreBuffered,
-      defer: false)
-    @window.title = NSBundle.mainBundle.infoDictionary['CFBundleName']
-    @window.orderFrontRegardless
-
-    scroll_view = NSScrollView.alloc.initWithFrame(NSMakeRect(20, 50, 392, scroll_view_height))
-    scroll_view.setAutoresizingMask(NSViewWidthSizable|NSViewHeightSizable)
-    scroll_view.setHasVerticalScroller(true)
-    scroll_view.setHasHorizontalScroller(true)
-    scroll_view.setBorderType(NSBezelBorder)
-    @window.contentView.addSubview(scroll_view)
-
-    @myTableView = NSTableView.alloc.init
-    @myTableView.setUsesAlternatingRowBackgroundColors(true)
-    scroll_view.setDocumentView(@myTableView)
-
-    column_name = NSTableColumn.alloc.initWithIdentifier("name")
-    column_name.editable = false
-    column_name.headerCell.title = "Name"
-    column_name.width = 150
-    @myTableView.addTableColumn(column_name)
-
-    column_color = NSTableColumn.alloc.initWithIdentifier("color")
-    column_color.editable = false
-    column_color.headerCell.title = "Status"
-    column_color.width = 150
-    @myTableView.addTableColumn(column_color)
-
-    @myTableView.delegate = self
-    @myTableView.dataSource = self
-
-    @addButton = NSButton.alloc.initWithFrame(NSMakeRect(337, 13, 80, 28))
-    @addButton.setTitle("Settings")
-    @addButton.setAction("settings:")
-    @addButton.setTarget(self)
-    @addButton.setBezelStyle(NSRoundedBezelStyle)
-    @addButton.setAutoresizingMask(NSViewMinXMargin)
-    @window.contentView.addSubview(@addButton)
-
-    @addButton = NSButton.alloc.initWithFrame(NSMakeRect(247, 13, 80, 28))
-    @addButton.setTitle("Refresh")
-    @addButton.setAction("refresh:")
-    @addButton.setTarget(self)
-    @addButton.setBezelStyle(NSRoundedBezelStyle)
-    @addButton.setAutoresizingMask(NSViewMinXMargin)
-    @window.contentView.addSubview(@addButton)
   end
 
   def fetchStatus
@@ -88,7 +35,6 @@ class JenkinsController < NSWindowController
   end
 
   def reload_data
-    @myTableView.reloadData
     refresh_menu_items
   end
 
@@ -106,6 +52,8 @@ class JenkinsController < NSWindowController
     end
 
     @menu.addItem NSMenuItem.separatorItem
+    settings_item = @menu.addItemWithTitle('Settings', action: 'settings:', keyEquivalent: '')
+    settings_item.setTarget(self)
     @menu.addItemWithTitle("Quit #{App.name}", action: 'terminate:', keyEquivalent: 'q')
   end
 
