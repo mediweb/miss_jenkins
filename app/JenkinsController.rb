@@ -28,6 +28,7 @@ class JenkinsController < NSWindowController
         reload_data
       elsif r.status_code.to_s =~ /40\d/
         show_alert("Failed to fetch data", "Jenkins is down or your settings are wrong. Please check.")
+        settings(nil)
       else
         show_alert("Error", r.error_message)
       end
