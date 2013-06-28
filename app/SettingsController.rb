@@ -8,12 +8,13 @@ class SettingsController < NSWindowController
   end
 
   def buildPanel
-    @window = NSWindow.alloc.initWithContentRect([[400, 400], [432, 210]],
+    @window = NSWindow.alloc.initWithContentRect([[0, 0], [432, 210]],
       styleMask: NSTitledWindowMask|NSClosableWindowMask|NSMiniaturizableWindowMask|NSResizableWindowMask,
       backing: NSBackingStoreBuffered,
       defer: false)
     @window.title = "Settings"
     @window.orderFrontRegardless
+    @window.center
 
     @editForm = NSForm.alloc.initWithFrame(NSMakeRect(13, 48, 242, 73))
     @editForm.setAutoresizingMask(NSViewMaxYMargin|NSViewWidthSizable)
