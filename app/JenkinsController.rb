@@ -66,38 +66,6 @@ class JenkinsController < NSWindowController
     fetchStatus
   end
 
-  # table delegate
-
-  def numberOfRowsInTableView(aTableView)
-    @feed.size
-  end
-
-  def tableView(aTableView,
-                objectValueForTableColumn: aTableColumn,
-                row: rowIndex)
-    id = aTableColumn.identifier
-    case id
-      when "name"
-        @feed[rowIndex][id]
-      when "color"
-        @feed[rowIndex][id]
-    end
-  end
-
-  def tableView(tableView, willDisplayCell: cell, forTableColumn: column, row: row)
-    if column.identifier == "color"
-      color = case cell.stringValue
-        when "red"
-          NSColor.redColor
-        when "blue"
-          NSColor.blueColor
-        else
-          NSColor.grayColor
-      end
-      cell.setTextColor(color)
-    end
-  end
-
   def settings(sender)
     @mySettingsController ||= SettingsController.alloc.init
 
@@ -106,10 +74,6 @@ class JenkinsController < NSWindowController
     if !@mySettingsController.wasCancelled
       NSUserDefaults.standardUserDefaults.setObject(newValues["jenkins_url"], forKey:"jenkins_url") if newValues["jenkins_url"]
     end
-  end
-
-  def refresh(sender)
-    fetchStatus
   end
 
   private
