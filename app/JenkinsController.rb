@@ -43,6 +43,7 @@ class JenkinsController < NSWindowController
     @menu.removeAllItems
     refresh_item = @menu.addItemWithTitle("Refresh", action: "refresh_status:", keyEquivalent:'')
     refresh_item.setTarget(self)
+    refresh_item.setImage(image_by_type('refresh'))
     @statusItem.setImage(failure_jobs_exist? ? failure_image : success_image)
 
     ordered_status = ["red_anime", "blue_anime", "grey_anime", "disabled_anime", "red", "blue", "grey", "disabled"]
@@ -51,13 +52,16 @@ class JenkinsController < NSWindowController
       @feed[color].each do |job|
         menu_item = @menu.addItemWithTitle("#{job['name']} - #{job['color']}", action: "link_item_url:", keyEquivalent:'')
         menu_item.setTarget(self)
+        menu_item.setImage(image_by_type(color))
       end
     end
 
     @menu.addItem NSMenuItem.separatorItem
     settings_item = @menu.addItemWithTitle('Settings', action: 'settings:', keyEquivalent: '')
     settings_item.setTarget(self)
-    @menu.addItemWithTitle("Quit #{App.name}", action: 'terminate:', keyEquivalent: 'q')
+    settings_item.setImage(image_by_type('settings'))
+    quit_item = @menu.addItemWithTitle("Quit #{App.name}", action: 'terminate:', keyEquivalent: 'q')
+    quit_item.setImage(image_by_type('quit'))
   end
 
   def link_item_url(sender)
@@ -131,5 +135,24 @@ class JenkinsController < NSWindowController
 
     def image_height
       image_width
+    end
+
+    def image_by_type(type)
+      # TODO rename images to "#{type}_icon&16.png" will be better
+      # TODO change color of icon images
+      NSImage.imageNamed case type
+      when /^red/
+        'delete_icon&16.png'
+      when /^blue/
+        'checkmark_icon&16.png'
+      when 'settings'
+        'cog_icon&16.png'
+      when 'refresh'
+        'reload_icon&16.png'
+      when 'quit'
+        'on-off_icon&16.png'
+      else
+        'cancel_icon&16.png'
+      end
     end
 end
