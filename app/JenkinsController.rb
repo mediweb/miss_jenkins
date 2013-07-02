@@ -40,6 +40,7 @@ class JenkinsController < NSWindowController
   end
 
   def refresh_menu_items
+    keep_urls_from_feed
     @menu.removeAllItems
     refresh_item = @menu.addItemWithTitle("Refresh", action: "refresh_status:", keyEquivalent:'')
     refresh_item.setTarget(self)
@@ -65,8 +66,7 @@ class JenkinsController < NSWindowController
   end
 
   def link_item_url(sender)
-    item = @feed[@menu.indexOfItem(sender)]
-    NSWorkspace.sharedWorkspace.openURL(target_url(item))
+    NSWorkspace.sharedWorkspace.openURL(target_url(sender))
   end
 
   def refresh_status(sender)
@@ -85,9 +85,13 @@ class JenkinsController < NSWindowController
 
   private
 
-    def target_url(item)
-      # Replace base url
-      NSURL.URLWithString(item['url'])
+    def keep_urls_from_feed
+      @urls = {}
+      @feed.each {|color, jobs| jobs.each{|j| @urls[j['name']] = j['url'] } }
+    end
+
+    def target_url(sender)
+      NSURL.URLWithString(@urls[sender.title.split('-').first.strip])
     end
 
     def jenkins_base_url
