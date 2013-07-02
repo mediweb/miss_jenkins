@@ -45,11 +45,10 @@ class JenkinsController < NSWindowController
     refresh_item.setTarget(self)
     @statusItem.setImage(failure_jobs_exist? ? failure_image : success_image)
 
-    status = ["red_anime", "blue_anime", "grey_anime", "disabled_anime", "red", "blue", "grey", "disabled"] # Sorting
-    (status & @feed.keys).each do |color|
-      jobs = @feed[color]
+    ordered_status = ["red_anime", "blue_anime", "grey_anime", "disabled_anime", "red", "blue", "grey", "disabled"]
+    (ordered_status & @feed.keys).each do |color|
       @menu.addItem NSMenuItem.separatorItem
-      jobs.each do |job|
+      @feed[color].each do |job|
         menu_item = @menu.addItemWithTitle("#{job['name']} - #{job['color']}", action: "link_item_url:", keyEquivalent:'')
         menu_item.setTarget(self)
       end
