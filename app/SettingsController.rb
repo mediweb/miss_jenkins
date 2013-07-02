@@ -8,7 +8,7 @@ class SettingsController < NSWindowController
   end
 
   def buildPanel
-    @window = NSWindow.alloc.initWithContentRect([[0, 0], [432, 210]],
+    @window = NSWindow.alloc.initWithContentRect([[0, 0], [280, 140]],
       styleMask: NSTitledWindowMask|NSClosableWindowMask|NSMiniaturizableWindowMask|NSResizableWindowMask,
       backing: NSBackingStoreBuffered,
       defer: false)
