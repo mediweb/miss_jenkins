@@ -5,6 +5,7 @@ class JenkinsController < NSWindowController
 
   def init
     @feed = []
+    @old_successful_jobs = []
     super
     buildMenu
     fetchStatus
@@ -36,6 +37,7 @@ class JenkinsController < NSWindowController
   end
 
   def reload_data
+    process_alerts
     refresh_menu_items
   end
 
@@ -81,6 +83,19 @@ class JenkinsController < NSWindowController
     if !@mySettingsController.wasCancelled
       NSUserDefaults.standardUserDefaults.setObject(newValues["jenkins_url"], forKey:"jenkins_url") if newValues["jenkins_url"]
     end
+  end
+
+  def process_alerts
+    # detect failed jobs
+    @old_successful_jobs.each do |job|
+      if @feed['red'] && failed_job = @feed['red'].detect { |failed| failed['name'] == job['name'] }
+        notification = NSUserNotification.alloc.init
+        notification.title = "#{job['name']} Build Failed"
+        notification.soundName = NSUserNotificationDefaultSoundName
+        NSUserNotificationCenter.defaultUserNotificationCenter.deliverNotification(notification)
+      end
+    end
+    @old_successful_jobs = @feed['blue']
   end
 
   private
